@@ -14,7 +14,6 @@ function verifyToken(req, res, next) {
         req.user = decoded;
         next();
     } catch (error) {
-        console.error("❌ Token invalid:", error);
         return res.redirect('/login');
     }
 }

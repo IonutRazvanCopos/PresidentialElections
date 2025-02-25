@@ -46,7 +46,8 @@
                             </form>
                         <% } else if (user && user.id === candidate.id) { %>
                             <span class="badge bg-secondary">Nu poți vota pentru tine</span>
-                        <% } else if (userHasVoted) { %>
+                        <% }
+                         if (userHasVoted) { %>
                             <span class="badge bg-success">Ai votat</span>
                         <% } %>
                     </li>

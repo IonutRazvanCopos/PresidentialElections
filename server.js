@@ -2,9 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
-const { verifyToken } = require('./middleware/auth');
 const path = require('path');
-const pool = require('./db');
 require('dotenv').config();
 
 const loginRoute = require('./routes/login');
@@ -22,16 +20,15 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 app.use(session({
-    secret: process.env.SECRET_KEY,
+    secret: process.env.SECRET_KEY || 'super_secret_key',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60
+    }
 }));
 
 app.use((req, res, next) => {
@@ -39,20 +36,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/profile', (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    next();
-}, profileRoute);
-
 app.use('/', homeRoute);
 app.use('/login', loginRoute);
 app.use('/register', registerRoute);
-app.use('/profile', verifyToken, profileRoute);
-app.use('/candidacy', verifyToken, candidacyRoute);
-app.use('/candidates', verifyToken, candidatesRoute);
-app.use('/vote', verifyToken, voteRoute);
-app.use('/profile', verifyToken, profileRoute);
+app.use('/profile', profileRoute);
+app.use('/candidacy', candidacyRoute);
+app.use('/candidates', candidatesRoute);
+app.use('/vote', voteRoute);
 
 app.listen(PORT);
