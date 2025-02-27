@@ -7,7 +7,6 @@ const router = express.Router();
 router.post('/', verifyToken, async (req, res) => {
     try {
         await pool.query('UPDATE users SET is_candidate = TRUE WHERE id = $1', [req.user.id]);
-
         res.redirect('/profile');
     } catch (error) {
         res.redirect('/profile');
