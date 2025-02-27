@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
         res.render('profile', { user: null, errorMessage: 'Eroare la încărcarea profilului' });
     }
 });
+
 router.get('/:id', async (req, res) => {
     const candidateId = req.params.id;
     try {
