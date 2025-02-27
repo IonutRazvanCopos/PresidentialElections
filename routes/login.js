@@ -10,29 +10,21 @@ router.get('/', (req, res) => {
 
 router.post('/', async (req, res) => {
     const { username, password } = req.body;
-
     if (!username || !password) {
         return res.render('login', { errorMessage: 'Toate câmpurile sunt obligatorii!' });
     }
-
     try {
         const user = await pool.query('SELECT id, username, password FROM users WHERE username = $1', [username]);
-
         if (user.rows.length === 0) {
             return res.render('login', { errorMessage: 'Nume de utilizator incorect!' });
         }
-
         const isMatch = await bcrypt.compare(password, user.rows[0].password);
         if (!isMatch) {
             return res.render('login', { errorMessage: 'Parolă incorectă!' });
         }
-        
         req.session.user = { id: user.rows[0].id, username: user.rows[0].username };
-        console.log(`✅ Utilizator ${req.session.user.username} (${req.session.user.id}) s-a autentificat.`);
-
         res.redirect('/');
     } catch (error) {
-        console.error("❌ Eroare la autentificare:", error);
         res.render('login', { errorMessage: 'Eroare de server. Încearcă din nou!' });
     }
 });

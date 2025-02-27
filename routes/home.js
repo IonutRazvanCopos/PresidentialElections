@@ -8,12 +8,9 @@ router.get('/', async (req, res) => {
         let userHasVoted = false;
         let user = req.session.user || null;
 
-        console.log("🛠️ Verificare sesiune utilizator:", user);
-
         if (user) {
             const checkVote = await pool.query('SELECT * FROM votes WHERE voter_id = $1', [user.id]);
             userHasVoted = checkVote.rows.length > 0;
-            console.log("🔍 Utilizatorul a votat deja?", userHasVoted);
         }
 
         const candidates = await pool.query(`
@@ -25,8 +22,6 @@ router.get('/', async (req, res) => {
             ORDER BY votes DESC
         `);
 
-        console.log("🔍 Lista candidaților:", candidates.rows);
-
         res.render('home', { 
             user, 
             candidates: candidates.rows,
@@ -35,7 +30,6 @@ router.get('/', async (req, res) => {
             successMessage: req.query.successMessage || null
         });
     } catch (error) {
-        console.error("❌ Eroare la încărcarea listei de candidați:", error);
         res.render('home', { 
             user: null, 
             candidates: [], 

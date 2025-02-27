@@ -11,10 +11,8 @@ router.get('/', async (req, res) => {
             WHERE is_candidate = TRUE
             ORDER BY username ASC
         `);
-
         res.render('candidates', { candidates: candidates.rows });
     } catch (error) {
-        console.error("❌ Eroare la încărcarea listei de candidați:", error);
         res.render('candidates', { candidates: [] });
     }
 });

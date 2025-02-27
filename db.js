@@ -11,8 +11,6 @@ const pool = new Pool({
 
 async function initializeDB() {
     try {
-        console.log("🔄 Inițializare baza de date...");
-
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -31,10 +29,8 @@ async function initializeDB() {
                 candidate_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE
             );
         `);
-
-        console.log("✅ Tabelele au fost create/verificate cu succes!");
     } catch (error) {
-        console.error("❌ Eroare la inițializarea bazei de date:", error);
+        console.error(error);
     }
 }
 

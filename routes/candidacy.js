@@ -10,7 +10,6 @@ router.post('/', verifyToken, async (req, res) => {
 
         res.redirect('/profile');
     } catch (error) {
-        console.error("❌ Eroare la depunerea candidaturii:", error);
         res.redirect('/profile');
     }
 });
