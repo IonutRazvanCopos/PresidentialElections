@@ -11,21 +11,21 @@ router.get('/', (req, res) => {
 router.post('/', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.render('login', { errorMessage: 'Toate câmpurile sunt obligatorii!' });
+        return res.render('login', { errorMessage: 'All fields are required!' });
     }
     try {
         const user = await pool.query('SELECT id, username, password FROM users WHERE username = $1', [username]);
         if (user.rows.length === 0) {
-            return res.render('login', { errorMessage: 'Nume de utilizator incorect!' });
+            return res.render('login', { errorMessage: 'Incorrect Username!' });
         }
         const isMatch = await bcrypt.compare(password, user.rows[0].password);
         if (!isMatch) {
-            return res.render('login', { errorMessage: 'Parolă incorectă!' });
+            return res.render('login', { errorMessage: 'Incorrect Password!' });
         }
         req.session.user = { id: user.rows[0].id, username: user.rows[0].username };
         res.redirect('/');
     } catch (error) {
-        res.render('login', { errorMessage: 'Eroare de server. Încearcă din nou!' });
+        res.render('login', { errorMessage: 'Server Error' });
     }
 });
 

@@ -9,20 +9,20 @@ router.post('/', async (req, res) => {
     }
     const { candidate_id } = req.body;
     if (!candidate_id) {
-        return res.redirect("/?errorMessage=Eroare: nu ai selectat un candidat.");
+        return res.redirect("/?errorMessage=Eroare: You must select a candidate to vote!");
     }
     try {
         const checkVote = await pool.query('SELECT * FROM votes WHERE voter_id = $1', [req.session.user.id]);
         if (checkVote.rows.length > 0) {
-            return res.redirect('/?errorMessage=Ai votat deja și nu poți vota din nou!');
+            return res.redirect('/?errorMessage=You Already voted, you can vote only once!');
         }
         const insertVote = await pool.query(
             'INSERT INTO votes (voter_id, candidate_id) VALUES ($1, $2) RETURNING *',
             [req.session.user.id, candidate_id]
         );
-        return res.redirect('/?successMessage=Votul a fost înregistrat cu succes!');
+        return res.redirect('/?successMessage=Vote Successful!');
     } catch (error) {
-        return res.redirect('/?errorMessage=Eroare la vot. Încercați din nou.');
+        return res.redirect('/?errorMessage=Vote Error. Try Again!');
     }
 });
 

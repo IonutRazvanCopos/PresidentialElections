@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
             user: null, 
             candidates: [], 
             userHasVoted: false,
-            errorMessage: 'Eroare la încărcarea candidaților.' 
+            errorMessage: 'Error loading candidates', 
         });
     }
 });

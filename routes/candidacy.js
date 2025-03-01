@@ -10,19 +10,19 @@ router.post('/', async (req, res) => {
         }
         const userId = req.session.user.id;
         if (!userId) {
-            return res.redirect('/profile?errorMessage=Eroare la depunerea candidaturii.');
+            return res.redirect('/profile');
         }
         const updateCandidate = await pool.query(
             `UPDATE users SET is_candidate = TRUE WHERE id = $1 RETURNING *`, 
             [userId]
         );
         if (updateCandidate.rowCount === 0) {
-            return res.redirect('/profile?errorMessage=Eroare la depunerea candidaturii.');
+            return res.redirect('/profile');
         }
         req.session.user.is_candidate = true;
-        return res.redirect('/profile?successMessage=Candidatura depusă cu succes!');
+        return res.redirect('/profile');
     } catch (error) {
-        return res.redirect('/profile?errorMessage=Eroare la depunerea candidaturii.');
+        return res.redirect('/profile');
     }
 });
 
