@@ -1,17 +1,12 @@
 const express = require('express');
-const pool = require('../db');
+const { getCandidates } = require('../db');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const candidates = await pool.query(`
-            SELECT id, username, description 
-            FROM users 
-            WHERE is_candidate = TRUE
-            ORDER BY username ASC
-        `);
-        res.render('candidates', { candidates: candidates.rows });
+        const candidates = await getCandidates();
+        res.render('candidates', { candidates });
     } catch (error) {
         res.render('candidates', { candidates: [] });
     }

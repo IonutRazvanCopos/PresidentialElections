@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const pool = require('../db');
+const { getUserByUsername, createUser } = require('../db');
 
 const router = express.Router();
 
@@ -13,17 +13,19 @@ router.post('/', async (req, res) => {
     if (!username || !password) {
         return res.render('register', { errorMessage: 'All fields are required!' });
     }
+
     try {
-        const existingUser = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
-        if (existingUser.rows.length > 0) {
+        const existingUser = await getUserByUsername(username);
+        if (existingUser) {
             return res.render('register', { errorMessage: 'This username is already taken!' });
         }
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+        await createUser(username, hashedPassword);
         res.redirect('/login');
     } catch (error) {
         console.error("Register Error", error);
-        res.render('register', { errorMessage: 'Error Server. Try Again!' });
+        res.render('register', { errorMessage: 'Server Error. Try Again!' });
     }
 });
 

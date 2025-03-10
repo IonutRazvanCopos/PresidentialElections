@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../db');
+const { setUserAsCandidate } = require('../db');
 
 const router = express.Router();
 
@@ -12,13 +12,12 @@ router.post('/', async (req, res) => {
         if (!userId) {
             return res.redirect('/profile');
         }
-        const updateCandidate = await pool.query(
-            `UPDATE users SET is_candidate = TRUE WHERE id = $1 RETURNING *`, 
-            [userId]
-        );
-        if (updateCandidate.rowCount === 0) {
+
+        const updatedUser = await setUserAsCandidate(userId);
+        if (!updatedUser) {
             return res.redirect('/profile');
         }
+
         req.session.user.is_candidate = true;
         return res.redirect('/profile');
     } catch (error) {

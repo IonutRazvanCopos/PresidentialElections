@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const pool = require('../db');
+const { getUserByUsername } = require('../db');
 
 const router = express.Router();
 
@@ -13,16 +13,19 @@ router.post('/', async (req, res) => {
     if (!username || !password) {
         return res.render('login', { errorMessage: 'All fields are required!' });
     }
+
     try {
-        const user = await pool.query('SELECT id, username, password FROM users WHERE username = $1', [username]);
-        if (user.rows.length === 0) {
+        const user = await getUserByUsername(username);
+        if (!user) {
             return res.render('login', { errorMessage: 'Incorrect Username!' });
         }
-        const isMatch = await bcrypt.compare(password, user.rows[0].password);
+
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.render('login', { errorMessage: 'Incorrect Password!' });
         }
-        req.session.user = { id: user.rows[0].id, username: user.rows[0].username };
+
+        req.session.user = { id: user.id, username: user.username };
         res.redirect('/');
     } catch (error) {
         res.render('login', { errorMessage: 'Server Error' });

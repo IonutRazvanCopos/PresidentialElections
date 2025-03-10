@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../db');
+const { hasUserVoted, getCandidatesWithVotes } = require('../db');
 
 const router = express.Router();
 
@@ -7,24 +7,13 @@ router.get('/', async (req, res) => {
     try {
         let userHasVoted = false;
         let user = req.session.user || null;
-
         if (user) {
-            const checkVote = await pool.query('SELECT * FROM votes WHERE voter_id = $1', [user.id]);
-            userHasVoted = checkVote.rows.length > 0;
+            userHasVoted = await hasUserVoted(user.id);
         }
-
-        const candidates = await pool.query(`
-            SELECT users.id, users.username, COALESCE(COUNT(votes.id), 0) AS votes
-            FROM users
-            LEFT JOIN votes ON users.id = votes.candidate_id
-            WHERE users.is_candidate = TRUE
-            GROUP BY users.id, users.username
-            ORDER BY votes DESC
-        `);
-
+        const candidates = await getCandidatesWithVotes();
         res.render('home', { 
             user, 
-            candidates: candidates.rows,
+            candidates,
             userHasVoted,
             errorMessage: req.query.errorMessage || null,
             successMessage: req.query.successMessage || null
