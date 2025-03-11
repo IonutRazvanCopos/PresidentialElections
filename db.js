@@ -47,11 +47,6 @@ async function setUserAsCandidate(userId) {
     }
 }
 
-module.exports = { pool, setUserAsCandidate };
-
-
-initializeDB();
-
 async function hasUserVoted(userId) {
     try {
         const result = await pool.query(
@@ -172,6 +167,8 @@ async function updateUserDescription(userId, description) {
         throw error;
     }
 }
+
+initializeDB();
 
 module.exports = { 
     pool, 
