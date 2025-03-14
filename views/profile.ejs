@@ -9,26 +9,44 @@
 <body class="bg-light">
     <div class="container mt-5">
         <div class="card shadow-lg p-4 mx-auto" style="max-width: 500px;">
-            <h2 class="text-center text-primary">My profile</h2>
-            <p class="text-center"><strong>User:</strong> <%= user.username %></p>
-            <form action="/profile/update" method="POST">
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <textarea class="form-control" id="description" name="description" rows="3"><%= user.description || '' %></textarea>
-                </div>
-                <button type="submit" class="btn btn-success w-100">Save</button>
-            </form>
-            <% if (!user.is_candidate) { %>
-                <form action="/candidacy" method="POST">
-                    <button type="submit" class="btn btn-warning w-100 mt-3">I am running for elections</button>
-                </form>
-            <% } else { %>
-                <p class="text-center text-success"><strong>You have run for elections!</strong></p>
-            <% } %>            
+            <h2 class="text-center text-primary">
+                <% if (user && user.username) { %>
+                    <% if (loggedInUser && loggedInUser.id === user.id) { %>
+                        My Profile
+                    <% } else { %>
+                        Profile of <%= user.username %>
+                    <% } %>
+                <% } else { %>
+                    <span class="text-danger">This profile does not exist or is private.</span>
+                <% } %>
+            </h2>                   
 
-            <% if (errorMessage) { %>
-                <div class="alert alert-danger mt-3 text-center"><%= errorMessage %></div>
+            <p class="text-center"><strong>User:</strong> <%= user.username %></p>
+
+            <% if (loggedInUser && loggedInUser.id === user.id) { %>
+                <form action="/profile/update" method="POST">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"><%= user.description || '' %></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Save</button>
+                </form>
+                
+                <% if (!user.is_candidate) { %>
+                    <form action="/candidacy" method="POST">
+                        <button type="submit" class="btn btn-warning w-100 mt-3">I am running for elections</button>
+                    </form>
+                <% } else { %>
+                    <p class="text-center text-success"><strong>You have run for elections!</strong></p>
+                <% } %>            
+            <% } else { %>
+                <p><strong>Description:</strong></p>
+                <p class="border p-3 bg-light"><%= user.description || 'No description available' %></p>
             <% } %>
+
+            <% if (typeof errorMessage !== "undefined" && errorMessage) { %>
+                <div class="alert alert-danger mt-3 text-center"><%= errorMessage %></div>
+            <% } %>            
             <hr>
             <a href="/" class="btn btn-secondary w-100">Back</a>
         </div>

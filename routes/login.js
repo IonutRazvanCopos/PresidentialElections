@@ -25,7 +25,12 @@ router.post('/', async (req, res) => {
             return res.render('login', { errorMessage: 'Incorrect Password!' });
         }
 
-        req.session.user = { id: user.id, username: user.username };
+        req.session.user = { 
+            id: user.id, 
+            username: user.username,
+            is_admin: user.is_admin 
+        };
+
         res.redirect('/');
     } catch (error) {
         res.render('login', { errorMessage: 'Server Error' });

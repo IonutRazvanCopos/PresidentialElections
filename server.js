@@ -12,6 +12,8 @@ const candidacyRoute = require('./routes/candidacy');
 const candidatesRoute = require('./routes/candidates');
 const voteRoute = require('./routes/vote');
 const homeRoute = require('./routes/home');
+const historyRoutes = require('./routes/history');
+const adminRoute = require('./routes/admin');
 
 const app = express();
 const PORT = 3000;
@@ -43,5 +45,7 @@ app.use('/profile', profileRoute);
 app.use('/candidacy', candidacyRoute);
 app.use('/candidates', candidatesRoute);
 app.use('/vote', voteRoute);
+app.use('/history', historyRoutes);
+app.use('/admin', adminRoute);
 
 app.listen(PORT);

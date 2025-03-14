@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserById, getCandidateById, updateUserDescription } = require('../db');
+const { getUserById, updateUserDescription } = require('../db');
 
 const router = express.Router();
 
@@ -12,22 +12,32 @@ router.get('/', async (req, res) => {
         if (!user) {
             return res.redirect('/login');
         }
-        res.render('profile', { user, errorMessage: null });
+        res.render('profile', { user, loggedInUser: req.session.user, errorMessage: null });
     } catch (error) {
-        res.render('profile', { user: null, errorMessage: 'Loading Error' });
+        res.render('profile', { user: null, loggedInUser: req.session.user, errorMessage: 'Loading Error' });
     }
 });
 
 router.get('/:id', async (req, res) => {
-    const candidateId = req.params.id;
+    const userId = req.params.id;
+    const loggedInUser = req.session.user || null;
+
     try {
-        const candidate = await getCandidateById(candidateId);
-        if (!candidate) {
-            return res.status(404).send("Profile of candidate is private or does not exist.");
+        const user = await getUserById(userId);
+
+        if (!user) {
+            return res.render('profile', { user: {}, loggedInUser, errorMessage: "Profile not found." });
         }
-        res.render('candidates', { candidate });
+
+        if (!user.is_public && !user.is_candidate) {
+            return res.render('profile', { user: {}, loggedInUser, errorMessage: "This profile is private." });
+        }        
+
+        res.render('profile', { user, loggedInUser, errorMessage: null });
+
     } catch (error) {
-        res.status(500).send("Error loading candidate profile.");
+        console.error("Error loading profile:", error);
+        res.render('profile', { user: {}, loggedInUser, errorMessage: "Error loading profile." });
     }
 });
 

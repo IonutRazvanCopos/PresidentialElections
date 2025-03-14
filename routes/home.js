@@ -1,30 +1,69 @@
 const express = require('express');
-const { hasUserVoted, getCandidatesWithVotes } = require('../db');
+const { getActiveVotingRounds, getCandidatesByRound, addCandidateToRound, hasUserVotedInRound, voteInRound } = require('../db');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        let userHasVoted = false;
         let user = req.session.user || null;
-        if (user) {
-            userHasVoted = await hasUserVoted(user.id);
+        let activeRounds = await getActiveVotingRounds();
+        let selectedRoundId = req.query.round || null;
+        let candidates = [];
+        let userHasVoted = false;
+
+        if (selectedRoundId) {
+            candidates = await getCandidatesByRound(selectedRoundId);
+            if (user) {
+                userHasVoted = await hasUserVotedInRound(user.id, selectedRoundId);
+            }
         }
-        const candidates = await getCandidatesWithVotes();
+
         res.render('home', { 
             user, 
+            activeRounds, 
+            selectedRoundId, 
             candidates,
-            userHasVoted,
-            errorMessage: req.query.errorMessage || null,
-            successMessage: req.query.successMessage || null
+            userHasVoted
         });
     } catch (error) {
         res.render('home', { 
             user: null, 
+            activeRounds: [], 
+            selectedRoundId: null, 
             candidates: [], 
             userHasVoted: false,
-            errorMessage: 'Error loading candidates', 
+            errorMessage: "Error loading voting rounds."
         });
+    }
+});
+
+router.post('/become-candidate', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    const { round_id } = req.body;
+
+    try {
+        await addCandidateToRound(req.session.user.id, round_id);
+        res.redirect(`/?round=${round_id}`);
+    } catch (error) {
+        res.redirect(`/?errorMessage=Failed to become candidate.`);
+    }
+});
+
+router.post('/vote', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    const { candidate_id, round_id } = req.body;
+
+    try {
+        await voteInRound(req.session.user.id, candidate_id, round_id);
+        res.redirect(`/?round=${round_id}&successMessage=Vote registered successfully!`);
+    } catch (error) {
+        res.redirect(`/?errorMessage=Error registering vote.`);
     }
 });
 

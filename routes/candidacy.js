@@ -9,18 +9,19 @@ router.post('/', async (req, res) => {
             return res.redirect('/login');
         }
         const userId = req.session.user.id;
-        if (!userId) {
-            return res.redirect('/profile');
-        }
 
         const updatedUser = await setUserAsCandidate(userId);
+
         if (!updatedUser) {
             return res.redirect('/profile');
         }
 
         req.session.user.is_candidate = true;
+        req.session.user.is_public = true;
+
         return res.redirect('/profile');
     } catch (error) {
+        console.error("Error in candidacy route:", error);
         return res.redirect('/profile');
     }
 });

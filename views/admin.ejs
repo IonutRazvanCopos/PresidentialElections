@@ -1,0 +1,14 @@
+<h1>Admin Panel</h1>
+<form action="/admin/create-round" method="POST">
+    <label for="name">Round Name:</label>
+    <input type="text" name="name" required>
+    
+    <label for="start_time">Start Time:</label>
+    <input type="datetime-local" name="start_time" required>
+
+    <label for="end_time">End Time:</label>
+    <input type="datetime-local" name="end_time" required>
+
+    <button type="submit">Create Round</button>
+</form>
+<p><%= errorMessage %></p>
