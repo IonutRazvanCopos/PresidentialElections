@@ -40,6 +40,16 @@ async function initializeDB() {
                 CONSTRAINT unique_candidate_per_round UNIQUE (user_id, round_id)
             );
         `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS votes (
+                id SERIAL PRIMARY KEY,
+                voter_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                candidate_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                round_id INT NOT NULL REFERENCES voting_rounds(id) ON DELETE CASCADE,
+                CONSTRAINT unique_vote_per_round UNIQUE (voter_id, round_id) 
+            );
+        `);
         
     } catch (error) {
         console.error("Database initialization error:", error);
