@@ -9,7 +9,7 @@
 <body>
     <div class="container mt-5">
         <h1>Admin Panel</h1>
-        <form action="/admin/create-round" method="POST">
+        <form action="/user/admin/create-round" method="POST">
             <div class="form-group">
                 <label for="name">Round Name:</label>
                 <input type="text" class="form-control" name="name" required>
@@ -27,8 +27,6 @@
         <a href="/" class="btn btn-secondary mt-3">Back Home</a>
         <p class="text-danger mt-3"><%= errorMessage %></p>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

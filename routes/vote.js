@@ -1,29 +1,55 @@
-const express = require('express');
-const { hasUserVoted, castVote } = require('../db');
+const express = require("express");
+const { hasUserVotedInRound, voteInRound, getCandidatesByRound, setUserAsCandidate } = require("../db");
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
+router.get("/candidates/:roundId", async (req, res) => {
+    const candidates = await getCandidatesByRound(req.params.roundId);
+    res.json(candidates);
+});
 
-    const { candidate_id } = req.body;
-    if (!candidate_id) {
-        return res.redirect("/?errorMessage=Eroare: You must select a candidate to vote!");
-    }
+router.get("/has-voted/:userId/:roundId", async (req, res) => {
+    const hasVoted = await hasUserVotedInRound(req.params.userId, req.params.roundId);
+    res.json({ hasVoted });
+});
 
+router.post("/", async (req, res) => {
+    const { voterId, candidateId, roundId } = req.body;
+    const vote = await voteInRound(voterId, candidateId, roundId);
+
+    if (!vote) return res.status(400).json({ error: "You already voted in this round" });
+    res.json({ success: true, message: "Vote cast successfully" });
+});
+
+router.post('/candidacy', async (req, res) => {
     try {
+        if (!req.session || !req.session.user) {
+            return res.redirect('/login');
+        }
         const userId = req.session.user.id;
-        
-        if (await hasUserVoted(userId)) {
-            return res.redirect('/?errorMessage=You Already voted, you can vote only once!');
+
+        const updatedUser = await setUserAsCandidate(userId);
+
+        if (!updatedUser) {
+            return res.redirect('/profile');
         }
 
-        await castVote(userId, candidate_id);
-        return res.redirect('/?successMessage=Vote Successful!');
+        req.session.user.is_candidate = true;
+        req.session.user.is_public = true;
+
+        return res.redirect('/profile');
     } catch (error) {
-        return res.redirect('/?errorMessage=Vote Error. Try Again!');
+        console.error("Error in candidacy route:", error);
+        return res.redirect('/profile');
+    }
+});
+
+router.get('/candidates', async (req, res) => {
+    try {
+        const candidates = await getCandidates();
+        res.render('candidates', { candidates });
+    } catch (error) {
+        res.render('candidates', { candidates: [] });
     }
 });
 

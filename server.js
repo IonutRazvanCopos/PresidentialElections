@@ -5,15 +5,10 @@ const session = require('express-session');
 const path = require('path');
 require('dotenv').config();
 
-const loginRoute = require('./routes/login');
-const registerRoute = require('./routes/register');
-const profileRoute = require('./routes/profile');
-const candidacyRoute = require('./routes/candidacy');
-const candidatesRoute = require('./routes/candidates');
+const userRoutes = require('./routes/user');
 const voteRoute = require('./routes/vote');
 const homeRoute = require('./routes/home');
 const historyRoutes = require('./routes/history');
-const adminRoute = require('./routes/admin');
 
 const app = express();
 const PORT = 3000;
@@ -39,13 +34,24 @@ app.use((req, res, next) => {
 });
 
 app.use('/', homeRoute);
-app.use('/login', loginRoute);
-app.use('/register', registerRoute);
-app.use('/profile', profileRoute);
-app.use('/candidacy', candidacyRoute);
-app.use('/candidates', candidatesRoute);
+app.use('/user', userRoutes);
 app.use('/vote', voteRoute);
 app.use('/history', historyRoutes);
-app.use('/admin', adminRoute);
+
+app.get('/login', (req, res) => {
+    res.redirect('/user/login');
+});
+
+app.get('/register', (req, res) => {
+    res.redirect('/user/register');
+});
+
+app.get('/profile', (req, res) => {
+    res.redirect('/user/profile');
+});
+
+app.get('/admin', (req, res) => {
+    res.redirect('/user/admin');
+});
 
 app.listen(PORT);
