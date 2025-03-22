@@ -6,9 +6,8 @@ const path = require('path');
 require('dotenv').config();
 
 const userRoutes = require('./routes/user');
-const voteRoute = require('./routes/vote');
 const homeRoute = require('./routes/home');
-const historyRoutes = require('./routes/history');
+const roundRouter = require('./routes/round');
 
 const app = express();
 const PORT = 3000;
@@ -35,8 +34,8 @@ app.use((req, res, next) => {
 
 app.use('/', homeRoute);
 app.use('/user', userRoutes);
-app.use('/vote', voteRoute);
-app.use('/history', historyRoutes);
+app.use('/round', roundRouter);
+
 
 app.get('/login', (req, res) => {
     res.redirect('/user/login');

@@ -16,12 +16,12 @@
                     <% if (user.username === "admin") { %>
                         <a href="/admin" class="btn btn-dark">Admin Panel</a>
                     <% } %>
-                    <a href="/logout" class="btn btn-danger">Logout</a>
+                    <a href="/user/logout" class="btn btn-danger">Logout</a>
                 <% } else { %>
                     <a href="/login" class="btn btn-primary">Login</a>
                     <a href="/register" class="btn btn-secondary">Signup</a>
                 <% } %>
-                <a href="/history" class="btn btn-warning">History</a>
+                <a href="/round/history" class="btn btn-warning">History</a>
             </div>
         </nav>
 
@@ -54,7 +54,7 @@
                                             - <%= candidate.votes %> votes
                                             
                                             <% if (user && user.id !== candidate.id && !userHasVoted) { %>
-                                                <form action="/vote" method="POST">
+                                                <form action="/round/vote" method="POST">
                                                     <input type="hidden" name="candidate_id" value="<%= candidate.id %>">
                                                     <input type="hidden" name="round_id" value="<%= selectedRoundId %>">
                                                     <button type="submit" class="btn btn-primary btn-sm">Vote</button>
@@ -70,7 +70,7 @@
                             <% } %>
         
                             <% if (user && !candidates.find(c => c.id === user.id)) { %>
-                                <form action="/become-candidate" method="POST">
+                                <form action="/round/become-candidate" method="POST">
                                     <input type="hidden" name="round_id" value="<%= round.id %>">
                                     <button type="submit" class="btn btn-success mt-3">Become a Candidate</button>
                                 </form>

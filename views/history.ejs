@@ -18,7 +18,7 @@
         <ul class="list-group mt-3">
             <% pastRounds.forEach(round => { %>
                 <li class="list-group-item">
-                    <a href="/history?round=<%= round.id %>" class="text-decoration-none">
+                    <a href="/round/history?round=<%= round.id %>" class="text-decoration-none">
                         <strong><%= round.name %></strong> (Ended: <%= new Date(round.end_time).toLocaleString() %>)
                     </a>
                     <% if (selectedRoundId && selectedRoundId == round.id) { %>
