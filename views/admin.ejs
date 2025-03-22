@@ -7,6 +7,22 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="container mt-4">
+        <nav class="d-flex justify-content-between">
+            <h2 class="text-primary">Presidential Elections</h2>
+            <div>
+                <% if (user) { %>
+                    <a href="/profile" class="btn btn-success">Profil (<%= user.username %>)</a>
+                    <a href="/user/logout" class="btn btn-danger">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-primary">Login</a>
+                    <a href="/register" class="btn btn-secondary">Signup</a>
+                <% } %>
+                <a href="/round/history" class="btn btn-warning">History</a>
+            </div>
+        </nav>
+        <hr>
+    </div>
     <div class="container mt-5">
         <h1>Admin Panel</h1>
         <form action="/round/create-round" method="POST">
