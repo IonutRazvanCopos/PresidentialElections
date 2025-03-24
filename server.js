@@ -1,6 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const session = require('express-session');
 const path = require('path');
 require('dotenv').config();
@@ -29,13 +27,13 @@ app.use(session({
 
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
+    res.locals.currentPath = req.path;
     next();
 });
 
 app.use('/', homeRoute);
 app.use('/user', userRoutes);
 app.use('/round', roundRouter);
-
 
 app.get('/login', (req, res) => {
     res.redirect('/user/login');

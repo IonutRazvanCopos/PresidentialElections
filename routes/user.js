@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const { getUserByUsername, createUser, getUserById, updateUserDescription, createVotingRound } = require('../db');
+const { getUserByUsername, createUser, getUserById, updateUserDescription } = require('../db');
 const router = express.Router();
 
 router.get('/login', (req, res) => {
@@ -65,39 +65,60 @@ router.get('/profile', async (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
+
     try {
         const user = await getUserById(req.session.user.id);
         if (!user) {
             return res.redirect('/login');
         }
-        res.render('profile', { user, loggedInUser: req.session.user, errorMessage: null });
+
+        res.render('profile', {
+            viewedUser: user,
+            errorMessage: null
+        });
+
     } catch (error) {
-        res.render('profile', { user: null, loggedInUser: req.session.user, errorMessage: 'Loading Error' });
+        console.error("Error loading profile:", error);
+        res.render('profile', {
+            viewedUser: null,
+            errorMessage: 'Loading Error'
+        });
     }
 });
 
 router.get('/profile/:id', async (req, res) => {
     const userId = req.params.id;
-    const loggedInUser = req.session.user || null;
 
     try {
-        const user = await getUserById(userId);
-
-        if (!user) {
-            return res.render('profile', { user: {}, loggedInUser, errorMessage: "Profile not found." });
+        const viewedUser = await getUserById(userId);
+        if (!viewedUser) {
+            return res.status(404).render('profile', {
+                viewedUser: null,
+                errorMessage: "Profile not found.",
+            });
         }
-
-        if (!user.is_public && !user.is_candidate) {
-            return res.render('profile', { user: {}, loggedInUser, errorMessage: "This profile is private." });
-        }        
-
-        res.render('profile', { user, loggedInUser, errorMessage: null });
-
+        const isAccessible = viewedUser.is_public || viewedUser.is_candidate;
+        if (!isAccessible) {
+            return res.status(403).render('profile', {
+                viewedUser: null,
+                errorMessage: "This profile is private."
+            });
+        }
+        if (req.session.user && req.session.user.id === viewedUser.id) {
+            return res.redirect('/user/profile');
+        }
+        return res.render('profile', {
+            viewedUser,
+            errorMessage: null
+        });
     } catch (error) {
-        console.error("Error loading profile:", error);
-        res.render('profile', { user: {}, loggedInUser, errorMessage: "Error loading profile." });
+        return res.status(500).render('profile', {
+            viewedUser: null,
+            errorMessage: "Server error while loading profile."
+        });
     }
 });
+
 
 router.post('/update', async (req, res) => {
     try {
@@ -117,8 +138,8 @@ router.post('/update', async (req, res) => {
 });
 
 router.get('/admin', (req, res) => {
-    if (!req.session.user || !req.session.user.is_admin) {
-        return res.redirect('/');
+    if (!req.session.user || req.session.user.username !== 'admin') {
+        return res.status(403).send("Access denied");
     }
     res.render('admin', { errorMessage: null });
 });

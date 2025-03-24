@@ -285,6 +285,11 @@ async function getCandidatesByPastRound(roundId) {
     }
 }
 
+async function updateUserVisibility(userId, isPublic) {
+    const query = `UPDATE users SET is_public = $1 WHERE id = $2`;
+    await pool.query(query, [isPublic, userId]);
+}
+
 initializeDB();
 
 module.exports = { 
@@ -305,5 +310,6 @@ module.exports = {
     getPastVotingRounds,
     getCandidatesByRound,
     addCandidateToRound,
-    getCandidatesByPastRound
+    getCandidatesByPastRound,
+    updateUserVisibility
 };

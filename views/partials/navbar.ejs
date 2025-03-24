@@ -1,0 +1,26 @@
+<div class="container mt-4">
+    <nav class="d-flex justify-content-between align-items-center">
+        <h2 class="text-primary">Presidential Elections</h2>
+        <div class="d-flex gap-2">
+            <% if (!user && currentPath !== '/user/login') { %>
+                <a href="/user/login" class="btn btn-primary">Login</a>
+            <% } %>
+            <% if (!user && currentPath !== '/user/register') { %>
+                <a href="/register" class="btn btn-secondary">Signup</a>
+            <% } %>
+            <% if (currentPath !== '/round/history') { %>
+                <a href="/round/history" class="btn btn-warning">History</a>
+            <% } %>
+            <% if (user) { %>
+                <% if (currentPath !== '/profile') { %>
+                    <a href="/profile" class="btn btn-success">Profil (<%= user.username %>)</a>
+                <% } %>
+                <% if (user.username === 'admin' && currentPath !== '/admin') { %>
+                    <a href="/admin" class="btn btn-dark">Admin Panel</a>
+                <% } %>
+                <a href="/user/logout" class="btn btn-danger">Logout</a>
+            <% } %>
+        </div>
+    </nav>
+    <hr>
+</div>

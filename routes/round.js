@@ -7,7 +7,8 @@ const {
     hasUserVotedInRound,
     voteInRound,
     createVotingRound,
-    setUserAsCandidate
+    setUserAsCandidate,
+    updateUserVisibility
 } = require('../db');
 
 const router = express.Router();
@@ -77,6 +78,7 @@ router.post('/vote', async (req, res) => {
 });
 
 router.post('/become-candidate', async (req, res) => {
+
     if (!req.session.user) {
         return res.redirect('/login');
     }
@@ -84,7 +86,9 @@ router.post('/become-candidate', async (req, res) => {
     const { round_id } = req.body;
 
     try {
+        const userId = req.session.user.id;
         await addCandidateToRound(req.session.user.id, round_id);
+        await updateUserVisibility(userId, true);
         res.redirect(`/?round=${round_id}`);
     } catch (error) {
         res.redirect(`/?errorMessage=Failed to become candidate.`);
