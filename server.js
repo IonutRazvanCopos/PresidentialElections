@@ -37,6 +37,11 @@ app.use('/round', roundRouter);
 
 app.get('/login', (req, res) => {
     res.redirect('/user/login');
+    req.session.user = { 
+        id: user.id, 
+        username: user.username,
+        is_admin: user.is_admin
+    };
 });
 
 app.get('/register', (req, res) => {

@@ -138,7 +138,7 @@ router.post('/update', async (req, res) => {
 });
 
 router.get('/admin', (req, res) => {
-    if (!req.session.user || req.session.user.username !== 'admin') {
+    if (!req.session.user || !req.session.user.is_admin) {
         return res.status(403).send("Access denied");
     }
     res.render('admin', { errorMessage: null });

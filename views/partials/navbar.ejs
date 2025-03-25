@@ -15,7 +15,7 @@
                 <% if (currentPath !== '/profile') { %>
                     <a href="/profile" class="btn btn-success">Profil (<%= user.username %>)</a>
                 <% } %>
-                <% if (user.username === 'admin' && currentPath !== '/admin') { %>
+                <% if (user.is_admin) { %>
                     <a href="/admin" class="btn btn-dark">Admin Panel</a>
                 <% } %>
                 <a href="/user/logout" class="btn btn-danger">Logout</a>
